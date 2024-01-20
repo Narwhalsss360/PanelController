@@ -160,7 +160,7 @@ object-result: an return value that is any object, usage:
             * `void Deinitialize()`
     * `static class Extensions`
         * Types
-            * `enum ExtensionTypes`
+            * `enum ExtensionCategories`
                 * `Generic`
                 * `Channel`
                 * `Action`
@@ -173,6 +173,7 @@ object-result: an return value that is any object, usage:
         * Properties
             * `Type[] AllExtensions`
         * Methods
+            * `ExtensionCategories GetExtensionCategory(this Type type)`
             * `void Load(Type type)`
             * `void Load<T>()`
             * `void Load(Assembly)`

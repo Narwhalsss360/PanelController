@@ -40,44 +40,46 @@ namespace PanelController.Controller
 
         public static ObservableCollection<IPanelObject> GenericObjects = new();
 
+        public static ExtensionCategories? GetExtensionCategory(this Type type)
+        {
+            if (type.Implements<IChannel>())
+                return ExtensionCategories.Channel;
+            if (type.Implements<IPanelAction>())
+                return ExtensionCategories.Action;
+            if (type.Implements<IPanelSettable>())
+                return ExtensionCategories.Settable;
+            if (type.Implements<IPanelSource>())
+                return ExtensionCategories.Source;
+            if (type.Implements<IPanelObject>())
+                return ExtensionCategories.Generic;
+            return null;
+        }
+
         public static void Load(Type type)
         {
-            if (type.GetConstructor(new Type[] { }) is null)
+            if (type.GetConstructor(new Type[] { }) is null || type.GetExtensionCategory() is not ExtensionCategories category)
                 return;
 
-            if (type.Implements<IChannel>())
+            switch (category)
             {
-                ExtensionsByCategory[ExtensionCategories.Channel].Add(type);
-                foreach (var method in type.GetMethods())
-                {
-                    if (!method.IsDetector())
-                        continue;
-                    Detectors.Add(new(type, method, (IChannel.Detect)Delegate.CreateDelegate(typeof(IChannel.Detect), method)));
-                }
+                case ExtensionCategories.Generic:
+                    if (type.GetCustomAttribute<AutoLaunchAttribute>() is not null)
+                        if (Activator.CreateInstance(type) is IPanelObject obj)
+                            GenericObjects.Add(obj);
+                    break;
+                case ExtensionCategories.Channel:
+                    foreach (var method in type.GetMethods())
+                    {
+                        if (!method.IsDetector())
+                            continue;
+                        Detectors.Add(new(type, method, (IChannel.Detect)Delegate.CreateDelegate(typeof(IChannel.Detect), method)));
+                    }
+                    break;
+                default:
+                    break;
             }
-            else if (type.Implements<IPanelAction>())
-            {
-                ExtensionsByCategory[ExtensionCategories.Action].Add(type);
-            }
-            else if (type.Implements<IPanelSettable>())
-            {
-                ExtensionsByCategory[ExtensionCategories.Settable].Add(type);
-            }
-            else if (type.Implements<IPanelSource>())
-            {
-                ExtensionsByCategory[ExtensionCategories.Source].Add(type);
-            }
-            else if (type.Implements<IPanelObject>())
-            {
-                ExtensionsByCategory[ExtensionCategories.Generic].Add(type);
-                if (type.GetCustomAttribute<AutoLaunchAttribute>() is not null)
-                    if (Activator.CreateInstance(type) is IPanelObject obj)
-                        GenericObjects.Add(obj);
-            }
-            else
-            {
-                return;
-            }
+
+            ExtensionsByCategory[category].Add(type);
             Logger.Log($"Loaded {type.GetItemName()}.", Logger.Levels.Info, "Extension Loader");
         }
 
