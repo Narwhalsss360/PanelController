@@ -28,9 +28,9 @@ namespace PanelController.Profiling
             }
         }
 
-        Guid PanelGuid;
+        public Guid PanelGuid;
 
-        IChannel Channel;
+        public IChannel Channel;
 
         public event EventHandler<InterfaceUpdatedEventArgs>? InterfaceUpdated;
 

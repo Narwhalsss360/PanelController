@@ -29,7 +29,7 @@ namespace PanelController.Controller
 
         public static EventHandler? Deinitialized;
 
-        public static CancellationTokenSource s_deinitializects = new();
+        private static CancellationTokenSource s_deinitializects = new();
 
         public static CancellationToken DeinitializedCancellationToken { get => s_deinitializects.Token; }
 

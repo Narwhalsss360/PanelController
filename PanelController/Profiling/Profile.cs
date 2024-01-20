@@ -8,9 +8,9 @@ namespace PanelController.Profiling
 
         public Dictionary<Guid, List<Mapping>> MappingsByGuid = new();
 
-        Guid[] Guids { get => MappingsByGuid.Keys.ToArray(); }
+        public Guid[] Guids { get => MappingsByGuid.Keys.ToArray(); }
 
-        Mapping[] Mappings
+        public Mapping[] Mappings
         {
             get
             {
