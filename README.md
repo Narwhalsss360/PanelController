@@ -125,11 +125,13 @@ object-result: an return value that is any object, usage:
                 * `Warning`
                 * `Info`
                 * `Debug`
-            * `readonly struct HistoricalLog`
+            * `readonly class HistoricalLog`
                 * Members
                     * `readonly string Message`
                     * `readonly Levels Level`
                     * `readonly string From`
+                * Methods
+                    * `string ToString(string? format, IFormatProvider? _)`
         * Events
             * `EventHandler<HistoricalLog> Logged`: Invoked when a new message is logged
         * Properties

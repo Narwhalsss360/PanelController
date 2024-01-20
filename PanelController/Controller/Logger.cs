@@ -12,7 +12,7 @@ namespace PanelController.Controller
             Debug
         }
 
-        public struct HistoricalLog
+        public class HistoricalLog : IFormattable
         {
             public readonly string Message;
 
@@ -25,6 +25,21 @@ namespace PanelController.Controller
                 Message = message;
                 Level = level;
                 From = from;
+            }
+
+            /// <summary>
+            /// /M -> Message
+            /// /L -> Level
+            /// /F -> From
+            /// </summary>
+            /// <param name="format">Format</param>
+            /// <param name="_"></param>
+            /// <returns>Formatted string</returns>
+            public string ToString(string? format, IFormatProvider? _)
+            {
+                if (format is not string fmt)
+                    return "";
+                return format.Replace("/M", Message).Replace("/L", $"{Level}").Replace("/F", From);
             }
         }
 
