@@ -23,33 +23,35 @@ object-result: an return value that is any object, usage:
 
 ## Class Library: PanelController
 * namespace **PanelObjects**
-    * interface IPanelObject : IFormmatable
+    * `interface IPanelObject : IFormmatable`
         * Properties
             * `string Status`: General status of object (Default: "OK")
         * Methods
             * `string? ToString()`: returns ItemName
             * `string IFormmatable.ToString(string? _, IFormatProvider? _)`: returns ItemName
-    * interface IPanelAction : IPanelObject
+    * `interface IPanelAction : IPanelObject`
         * Methods
             * `object? Run()`: Run the action, returns an object-result
-    * interface IPanelSettable : IPanelObject
+    * `interface IPanelSettable : IPanelObject`
          * Methods
             * `object? Set(object? value)`: Set a value, returns an object-result
-    * interface IPanelSource : IPanelObject
+    * `interface IPanelSource : IPanelObject`
         * Methods
             * `object? Get()`: Get a value, returns object-result
-    * interface IChannel : IPanelObject
+    * `interface IChannel : IPanelObject`
         * Types
             * `delegate void IChannel[] Detect()`: Delegate that detects when new channels are available and returns then new open channels
             * `class DetectorAttribute : Attribute`: Attribute to be applied to public, static functions that fit the Detect delegate type
         * Properties
-            * `bool Open`: Whether or not the channel is open for communications.
+            * `bool IsOpen`: Whether or not the channel is open for communications.
         * Events
             * `EventHandler<byte[]> BytesReceived`: Event that gets invoked when bytes are received from the channel
         * Methods
-            * `object? Begin()`: Attempt to open the communication channel, returns object-result
+            * `object? Open()`: Attempt to open the communication channel, returns object-result
             * `object? Send(byte[] data)`: Attempt to send data through the channel, returns object-result
-            * `void End()`: Close the communication channel
+            * `void Close()`: Close the communication channel
+    * `static class MethodInfoExtensions`
+        * Methods
             * `bool IsDetector(this MethodInfo method)`: Whether `method` fits the criteria of `delegate Detect` and is `public static`
     * `class PanelExtensionAttribute : Attribute`
     * `static class TypeExtensions`
@@ -64,15 +66,16 @@ object-result: an return value that is any object, usage:
         * `class ItemDescriptionAttribute : Attribute`: Applied to delclarations for user descriptions
         * `class UserPropertyAttribute : Attribute` Applied to *properties* that the user may edit
         * `class RangedUserPropertyAttribute : Attribute` Applied to *properties* that the user may edit within a specific range
-        * `class ConstrainedAttribute : Attribute` Applied to *properties* that the user may edit to specific values
+        * `class ConstrainedUserPropertyAttribute : Attribute` Applied to *properties* that the user may edit to specific values
+        * `class RegexConstrainedUserPropertyAttribute : Attribute`
 * namespace **Profiling**
     * `enum InterfaceTypes`
-        * `Analog`
         * `Digital`
+        * `Analog`
         * `Display`
     * `class ConnectedPanel`
         * Types
-            * `class InterfaceUpdatedEventArgs`
+            * `class InterfaceUpdatedEventArgs : EventArgs`
                 * Members
                     * `readonly InterfaceTypes InterfaceType`
                     * `readonly uint InterfaceID`
@@ -89,24 +92,21 @@ object-result: an return value that is any object, usage:
         * Methods
             * `ctor(IChannel channel, Guid panelGuid)`
             * `async Task SendSourceData(uint interfaceID, object? sourceData)`
+    * `class Macro`
     * `class Mapping`
         * Members
             * `Guid PanelGuid`
             * `InterfaceTypes InterfaceType`
             * `uint InterfaceID`
             * `object? InterfaceOption`
-            * `List<Tuple<TimeSpan, IPanelObject>> MappedTo`
-        * Methods
-            * `async Task<Dictionary<IPanelObject, object?>> Run()`
-            * `async Task<Dictionary<IPanelObject, object?>> Set(object? value)`
-            * `async Task<Dictionary<IPanelObject, object?>> Get()`
+            * `Macro Macro`
     * `class Profile`
         * Members
             * `string Name`
             * `Dictionary<Guid, Mapping> MappingsByPanel`
         * Properties
-            * `Mapping[] Mappings`
             * `Guid[] PanelGuids`
+            * `Mapping[] Mappings`
         * Methods
             * `void AddMapping(Mapping)`
             * `void RemoveMapping(Mapping)`
@@ -129,12 +129,12 @@ object-result: an return value that is any object, usage:
                     * `readonly string Message`
                     * `readonly Levels Level`
                     * `readonly string From`
-                * Events
-                    * `EventHandler<HistoricalLog> Logged`: Invoked when a new message is logged
-                * Properties
-                    * `HistoricalLogs[] Logs`: History of logs
-                * Methods
-                    * `void Log(string message, Levels level, object? from)`
+        * Events
+            * `EventHandler<HistoricalLog> Logged`: Invoked when a new message is logged
+        * Properties
+            * `HistoricalLogs[] Logs`: History of logs
+        * Methods
+            * `void Log(string message, Levels level, object? from)`
     * `static class Main`
         * Members
             * `ObservableCollection<ConnectedPanel> ConnectedPanels`
@@ -143,15 +143,18 @@ object-result: an return value that is any object, usage:
             * `bool IsInitialized`
             * `int SelectedProfileIndex`
             * `Profile? CurrentProfile`
+            * `CancellationToken DeinitializedCancellationToken`
         * Events
             * `EventHandler Initialized`
             * `EventHandler Deinitialized`
         * Methods
             * `void Initialize()`
             * `void Handshake(IChannel channel)`
-            * `void HandshakeAsync(IChannel channel)`
+            * `async Task HandshakeAsync(IChannel channel)`
             * `void RefreshConnectedPanels()`
+            * `async Task RefreshConnectedPanelAsync`
             * `void SendSourcesData()`
+            * `async Task SendSourcesDataAsync()`
             * `void InterfaceUpdated(object sender, InterfaceUpdatedEventArgs args)`
             * `void Deinitialize()`
     * `static class Extensions`
@@ -164,10 +167,10 @@ object-result: an return value that is any object, usage:
                 * `Source`
         * Members
             * `ObservableCollection<Tuple<Type, MethodInfo, IChannel.Detect>> Detectors`
-            * `Dictionary<ExtensionTypes, ObservableCollection<Type>> ExtensionsByType`
+            * `Dictionary<ExtensionCategories, ObservableCollection<Type>> ExtensionsByCategory`
             * `ObservableCollection<object> GenericObjects`
         * Properties
-            * `Type[] AllTypes`
+            * `Type[] AllExtensions`
         * Methods
             * `void Load(Type type)`
             * `void Load<T>()`
