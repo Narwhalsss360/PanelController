@@ -1,4 +1,5 @@
 ﻿using PanelController.PanelObjects;
+using PanelController.PanelObjects.Properties;
 using System.Collections.ObjectModel;
 using System.Reflection;
 
@@ -41,6 +42,9 @@ namespace PanelController.Controller
 
         public static void Load(Type type)
         {
+            if (type.GetConstructor(new Type[] { }) is null)
+                return;
+
             if (type.Implements<IChannel>())
             {
                 ExtensionsByCategory[ExtensionCategories.Channel].Add(type);
@@ -63,11 +67,17 @@ namespace PanelController.Controller
             {
                 ExtensionsByCategory[ExtensionCategories.Source].Add(type);
             }
-            else if (!type.Implements<IPanelObject>())
+            else if (type.Implements<IPanelObject>())
+            {
+                ExtensionsByCategory[ExtensionCategories.Generic].Add(type);
+                if (type.GetCustomAttribute<AutoLaunchAttribute>() is not null)
+                    if (Activator.CreateInstance(type) is IPanelObject obj)
+                        GenericObjects.Add(obj);
+            }
+            else
             {
                 return;
             }
-            ExtensionsByCategory[ExtensionCategories.Generic].Add(type);
             Logger.Log($"Loaded {type.GetItemName()}.", Logger.Levels.Info, "Extension Loader");
         }
 

@@ -53,7 +53,6 @@ object-result: an return value that is any object, usage:
     * `static class MethodInfoExtensions`
         * Methods
             * `bool IsDetector(this MethodInfo method)`: Whether `method` fits the criteria of `delegate Detect` and is `public static`
-    * `class PanelExtensionAttribute : Attribute`
     * `static class TypeExtensions`
         * Methods
             * `string GetItemName(this Type type)`: Get ItemName with `type.Name` as fallback
@@ -68,6 +67,8 @@ object-result: an return value that is any object, usage:
         * `class RangedUserPropertyAttribute : Attribute` Applied to *properties* that the user may edit within a specific range
         * `class ConstrainedUserPropertyAttribute : Attribute` Applied to *properties* that the user may edit to specific values
         * `class RegexConstrainedUserPropertyAttribute : Attribute`
+        * `class PanelExtensionAttribute : Attribute`
+        * `class AutoLaunchAttribute : Attribute`
 * namespace **Profiling**
     * `enum InterfaceTypes`
         * `Digital`
