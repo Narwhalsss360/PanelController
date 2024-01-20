@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\dependencies\NStreamCom\src\C#\NStreamCom\NStreamCom.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -9,7 +9,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Repository", "Repository", 
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
 		LICENSE = LICENSE
+		README.md = README.md
 	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dependencies", "Dependencies", "{99797B2C-ED01-4F31-A897-CBDB8B644AC7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NStreamCom", "dependencies\NStreamCom\src\C#\NStreamCom\NStreamCom.csproj", "{D2A91EBA-80A4-4EF0-9A94-74ED70107B06}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,9 +26,16 @@ Global
 		{890B9AE7-E7B8-4B81-92A6-5B1CD174274E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{890B9AE7-E7B8-4B81-92A6-5B1CD174274E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{890B9AE7-E7B8-4B81-92A6-5B1CD174274E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D2A91EBA-80A4-4EF0-9A94-74ED70107B06}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2A91EBA-80A4-4EF0-9A94-74ED70107B06}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D2A91EBA-80A4-4EF0-9A94-74ED70107B06}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D2A91EBA-80A4-4EF0-9A94-74ED70107B06}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D2A91EBA-80A4-4EF0-9A94-74ED70107B06} = {99797B2C-ED01-4F31-A897-CBDB8B644AC7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1E21D8F5-BFD4-4126-AF3A-0A58A58659A3}
