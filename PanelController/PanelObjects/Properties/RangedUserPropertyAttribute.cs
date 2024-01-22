@@ -11,7 +11,7 @@
 
         public string NameHigh { get { return _nameofHigh; } }
 
-        public RangedUserPropertyAttribute(string nameLow, string nameHigh)
+        public RangedUserPropertyAttribute(string nameLow = "", string nameHigh = "")
         {
             _nameofLow = nameLow;
             _nameofHigh = nameHigh;

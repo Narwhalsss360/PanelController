@@ -8,7 +8,15 @@ namespace PanelController.PanelObjects.Properties
         {
             if (obj is null)
                 return "null";
-            if (Array.Find(obj.GetType().GetProperties(), prop => prop.GetCustomAttribute<ItemNameAttribute>()?.Name is not string) is PropertyInfo nameProperty)
+
+            Predicate<PropertyInfo> predicate = prop =>
+            {
+                if (prop.GetCustomAttribute<ItemNameAttribute>() is not ItemNameAttribute itemName)
+                    return false;
+                return itemName.Name is null;
+            };
+
+            if (Array.Find(obj.GetType().GetProperties(), predicate) is PropertyInfo nameProperty)
                 return $"{nameProperty.GetValue(obj)}";
             if (obj.GetType().GetCustomAttribute<ItemNameAttribute>()?.Name is string name)
                 return name;

@@ -7,7 +7,7 @@
 
         public string NameRegex { get { return _nameofRegex; } }
 
-        public RegexConstrainedUserPropertyAttribute(string nameofRegex)
+        public RegexConstrainedUserPropertyAttribute(string nameofRegex = "")
         {
             _nameofRegex = nameofRegex;
         }

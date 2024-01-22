@@ -93,14 +93,12 @@ object-result: an return value that is any object, usage:
         * Methods
             * `ctor(IChannel channel, Guid panelGuid)`
             * `async Task SendSourceData(uint interfaceID, object? sourceData)`
-    * `class Macro`
     * `class Mapping`
         * Members
             * `Guid PanelGuid`
             * `InterfaceTypes InterfaceType`
             * `uint InterfaceID`
             * `object? InterfaceOption`
-            * `Macro Macro`
     * `class Profile`
         * Members
             * `string Name`
@@ -114,7 +112,7 @@ object-result: an return value that is any object, usage:
             * `Mapping? FindMapping(Guid guid, InterfaceTypes interfaceType, uint interfaceID, object? interfaceOption = null)`
     * `class PanelInfo`
         * Members
-            * `Guid Guid`
+            * `Guid PanelGuid`
             * `string Name`
             * `Dictionary<InterfaceTypes, uint> InterfaceCount`
 * namespace **Controller**
@@ -142,6 +140,7 @@ object-result: an return value that is any object, usage:
         * Members
             * `ObservableCollection<ConnectedPanel> ConnectedPanels`
             * `ObservableCollection<Profile> Profiles`
+            * `List<PanelInfo> PanelsInfo`
         * Properties
             * `bool IsInitialized`
             * `int SelectedProfileIndex`
@@ -169,7 +168,7 @@ object-result: an return value that is any object, usage:
                 * `Settable`
                 * `Source`
         * Members
-            * `ObservableCollection<Tuple<Type, MethodInfo, IChannel.Detect>> Detectors`
+            * `ObservableCollection<Tuple<bool, MethodInfo, IChannel.Detect>> Detectors`
             * `Dictionary<ExtensionCategories, ObservableCollection<Type>> ExtensionsByCategory`
             * `ObservableCollection<object> GenericObjects`
         * Properties

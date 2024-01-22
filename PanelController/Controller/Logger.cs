@@ -20,11 +20,14 @@ namespace PanelController.Controller
 
             public readonly string From;
 
-            public HistoricalLog(string message, Levels level, string from)
+            public readonly DateTime LoggedAt;
+
+            public HistoricalLog(string message, Levels level, string from, DateTime loggedAt)
             {
                 Message = message;
                 Level = level;
                 From = from;
+                LoggedAt = loggedAt;
             }
 
             /// <summary>
@@ -51,7 +54,7 @@ namespace PanelController.Controller
 
         public static void Log(string message, Levels level, object? sender = null)
         {
-            _historicalLogs.Add(new(message, level, sender.GetItemName()));
+            _historicalLogs.Add(new(message, level, sender.GetItemName(), DateTime.Now));
             Logged?.Invoke(typeof(Logger), _historicalLogs.Last());
         }
     }

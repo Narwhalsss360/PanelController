@@ -14,14 +14,17 @@ namespace PanelController.Profiling
 
         public class InterfaceUpdatedEventArgs : EventArgs
         {
+            public readonly Guid PanelGuid;
+
             public readonly InterfaceTypes InterfaceType;
 
             public readonly uint InterfaceID;
 
             public readonly object State;
 
-            public InterfaceUpdatedEventArgs(InterfaceTypes interfaceType, uint interfaceID, object state)
+            public InterfaceUpdatedEventArgs(Guid panelGuid, InterfaceTypes interfaceType, uint interfaceID, object state)
             {
+                PanelGuid = panelGuid;
                 InterfaceType = interfaceType;
                 InterfaceID = interfaceID;
                 State = state;

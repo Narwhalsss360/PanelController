@@ -16,7 +16,7 @@ namespace PanelController.Controller
             Source
         }
 
-        public static ObservableCollection<Tuple<Type, MethodInfo, IChannel.Detect>> Detectors = new();
+        public static ObservableCollection<Tuple<bool, MethodInfo, IChannel.Detect>> Detectors = new();
 
         public static Dictionary<ExtensionCategories, ObservableCollection<Type>> ExtensionsByCategory = new()
         {
@@ -72,7 +72,7 @@ namespace PanelController.Controller
                     {
                         if (!method.IsDetector())
                             continue;
-                        Detectors.Add(new(type, method, (IChannel.Detect)Delegate.CreateDelegate(typeof(IChannel.Detect), method)));
+                        Detectors.Add(new(true, method, (IChannel.Detect)Delegate.CreateDelegate(typeof(IChannel.Detect), method)));
                     }
                     break;
                 default:

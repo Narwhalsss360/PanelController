@@ -7,7 +7,7 @@
 
         public string NameConstraints { get { return _nameofConstraints; } }
 
-        public ConstrainedUserPropertyAttribute(string nameContstraints)
+        public ConstrainedUserPropertyAttribute(string nameContstraints = "")
         {
             _nameofConstraints = nameContstraints;
         }
