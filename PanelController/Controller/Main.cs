@@ -30,9 +30,9 @@ namespace PanelController.Controller
 
         public static bool IsInitialized { get => s_isInitialized; }
 
-        public static EventHandler? Initialized;
+        public static event EventHandler? Initialized;
 
-        public static EventHandler? Deinitialized;
+        public static event EventHandler? Deinitialized;
 
         private static CancellationTokenSource s_deinitializects = new();
 

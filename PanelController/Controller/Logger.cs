@@ -38,7 +38,7 @@ namespace PanelController.Controller
             /// <param name="format">Format</param>
             /// <param name="_"></param>
             /// <returns>Formatted string</returns>
-            public string ToString(string? format, IFormatProvider? _)
+            public string ToString(string? format = null, IFormatProvider? _ = null)
             {
                 if (format is not string fmt)
                     return "";

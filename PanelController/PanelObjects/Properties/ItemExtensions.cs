@@ -28,7 +28,8 @@ namespace PanelController.PanelObjects.Properties
             if (obj is null)
                 return "null";
             if (Array.Find(obj.GetType().GetProperties(), prop => prop.GetCustomAttribute<ItemDescriptionAttribute>()?.Description is not string) is PropertyInfo desccriptionProperty)
-                return $"{desccriptionProperty.GetValue(obj)}";
+                if (desccriptionProperty.PropertyType == typeof(string))
+                    return $"{desccriptionProperty.GetValue(obj)}";
             if (obj.GetType().GetCustomAttribute<ItemDescriptionAttribute>()?.Description is string description)
                 return description;
             return "";
