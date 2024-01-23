@@ -4,7 +4,7 @@ namespace PanelController.Profiling
 {
     public class Profile
     {
-        public string Name;
+        public string Name = "New Profile";
 
         public Dictionary<Guid, List<Mapping>> MappingsByGuid = new();
 
@@ -41,5 +41,7 @@ namespace PanelController.Profiling
         {
             MappingsByGuid[mapping.PanelGuid].Remove(mapping);
         }
+
+        public override string ToString() => Name;
     }
 }
