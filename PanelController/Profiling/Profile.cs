@@ -34,7 +34,7 @@ namespace PanelController.Profiling
         {
             if (!MappingsByGuid.ContainsKey(guid))
                 return null;
-            return MappingsByGuid[guid].Find(mapping => mapping == new Mapping() { PanelGuid = guid, InterfaceType = interfaceType, InterfaceID = interfaceID, InterfaceOption = interfaceOption });
+            return MappingsByGuid[guid].Find(mapping => mapping.PanelGuid == guid && mapping.InterfaceType == interfaceType && mapping.InterfaceID == interfaceID);
         }
 
         public void RemoveMapping(Mapping mapping)

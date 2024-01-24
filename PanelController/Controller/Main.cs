@@ -83,6 +83,7 @@ namespace PanelController.Controller
                 info.InterfaceCount[InterfaceTypes.Digital] = BitConverter.ToUInt32(data, 16);
                 info.InterfaceCount[InterfaceTypes.Analog] = BitConverter.ToUInt32(data, 20);
                 info.InterfaceCount[InterfaceTypes.Display] = BitConverter.ToUInt32(data, 24);
+                info.PanelGuid = guid;
 
                 ConnectedPanels.Add(new(guid, channel));
                 PanelsInfo.Add(info);
@@ -122,6 +123,7 @@ namespace PanelController.Controller
             }
             Task whenAll = Task.WhenAll(handshakers);
             whenAll.Wait(DeinitializedCancellationToken);
+            Thread.Sleep(1000);
         }
 
         public static async Task RefreshConnectedPanelsAsync() => await Task.Run(RefreshConnectedPanels, DeinitializedCancellationToken);
@@ -161,7 +163,7 @@ namespace PanelController.Controller
         {
             if (CurrentProfile is null)
                 return;
-            CurrentProfile.FindMapping(args.PanelGuid, args.InterfaceType, args.InterfaceID, args.State)?.Execute(args.State);
+                CurrentProfile.FindMapping(args.PanelGuid, args.InterfaceType, args.InterfaceID, args.State)?.Execute(args.State);
         }
 
         private static void ProcessExited(object? sender, EventArgs args)

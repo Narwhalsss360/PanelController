@@ -1,5 +1,6 @@
 ﻿using PanelController.PanelObjects;
 using NStreamCom;
+using PanelController.Controller;
 
 namespace PanelController.Profiling
 {
@@ -44,6 +45,7 @@ namespace PanelController.Profiling
             PanelGuid = panelGuid;
             Channel = channel;
             _collector.PacketsReady += PacketsCollected;
+            channel.BytesReceived += BytesReceived;
         }
 
         public async Task SendSourceData(uint interfaceID, object? sourceData)
@@ -51,7 +53,7 @@ namespace PanelController.Profiling
             throw new NotImplementedException();
         }
 
-        private void BytesReceived(byte[] bytes)
+        private void BytesReceived(object? sender, byte[] bytes)
         {
             try
             {
@@ -63,7 +65,21 @@ namespace PanelController.Profiling
 
         private void PacketsCollected(object sender, PacketsReadyEventArgs args)
         {
-            throw new NotImplementedException();
+            Message message = new Message(args.Packets);
+            switch ((ReceiveIDs)message.ID)
+            {
+                case ReceiveIDs.DigitalStateUpdate:
+                    if (message.Data.Length != 5)
+                        return;
+                    uint interfaceID = BitConverter.ToUInt32(message.Data, 0);
+                    bool activate = BitConverter.ToBoolean(message.Data, 4);
+                    Main.InterfaceUpdated(this, new InterfaceUpdatedEventArgs(PanelGuid, InterfaceTypes.Digital, interfaceID, activate));
+                    break;
+                case ReceiveIDs.AnalogStateUpdate:
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }

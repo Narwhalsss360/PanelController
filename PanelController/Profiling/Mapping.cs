@@ -4,7 +4,7 @@ using System.Net.Http.Headers;
 
 namespace PanelController.Profiling
 {
-    public class Mapping
+    public class Mapping : IEquatable<Mapping>
     {
         public Guid PanelGuid;
 
@@ -32,6 +32,18 @@ namespace PanelController.Profiling
                     results.Add(item.Item1, new InvalidOperationException($"Execute: Unkown IPanelObject type: {item.Item1}"));
             }
             return results;
+        }
+
+        public bool Equals(Mapping? other)
+        {
+            if (other is null)
+                return false;
+
+            return
+                PanelGuid == other.PanelGuid &&
+                InterfaceType == other.InterfaceType &&
+                InterfaceID == other.InterfaceID &&
+                InterfaceOption == other.InterfaceOption;
         }
     }
 }

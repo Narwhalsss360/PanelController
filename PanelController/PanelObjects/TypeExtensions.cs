@@ -18,5 +18,14 @@ namespace PanelController.PanelObjects
                 return name;
             return type.Name;
         }
+
+        public static IPanelObject CreatePanelObject(this Type type)
+        {
+            if (!type.Implements<IPanelObject>())
+                throw new ArgumentException("\"type\" must implement IPanelObject");
+            if (Activator.CreateInstance(type) is not IPanelObject obj)
+                throw new InvalidProgramException("Instance was not a IPanelObject");
+            return obj;
+        }
     }
 }

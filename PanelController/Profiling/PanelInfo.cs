@@ -1,6 +1,6 @@
 ﻿namespace PanelController.Profiling
 {
-    public class PanelInfo
+    public class PanelInfo : IFormattable
     {
         public Guid PanelGuid;
 
@@ -12,5 +12,7 @@
             { InterfaceTypes.Analog, 0 },
             { InterfaceTypes.Display, 0 }
         };
+
+        public string ToString(string? format = null, IFormatProvider? formatProvider = null) => $"{Name}";
     }
 }
