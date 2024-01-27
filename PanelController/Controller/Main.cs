@@ -14,7 +14,7 @@ namespace PanelController.Controller
 
         public static ObservableCollection<Profile> Profiles = new();
 
-        private static int s_selectedProfileIndex;
+        private static int s_selectedProfileIndex = -1;
 
         public static int SelectedProfileIndex
         {
@@ -161,9 +161,10 @@ namespace PanelController.Controller
 
         public static void InterfaceUpdated(object sender, InterfaceUpdatedEventArgs args)
         {
+            Logger.Log($"Received Giud:{args.PanelGuid} Type:{args.InterfaceType} ID:{args.InterfaceID} state:{args.State}", Logger.Levels.Debug, "Main");
             if (CurrentProfile is null)
                 return;
-                CurrentProfile.FindMapping(args.PanelGuid, args.InterfaceType, args.InterfaceID, args.State)?.Execute(args.State);
+            CurrentProfile.FindMapping(args.PanelGuid, args.InterfaceType, args.InterfaceID, args.State)?.Execute(args.State);
         }
 
         private static void ProcessExited(object? sender, EventArgs args)
