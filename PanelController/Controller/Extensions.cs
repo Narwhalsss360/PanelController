@@ -38,7 +38,7 @@ namespace PanelController.Controller
             }
         }
 
-        public static ObservableCollection<IPanelObject> GenericObjects = new();
+        public static ObservableCollection<IPanelObject> Objects = new();
 
         public static ExtensionCategories? GetExtensionCategory(this Type type)
         {
@@ -65,7 +65,7 @@ namespace PanelController.Controller
                 case ExtensionCategories.Generic:
                     if (type.GetCustomAttribute<AutoLaunchAttribute>() is not null)
                         if (Activator.CreateInstance(type) is IPanelObject obj)
-                            GenericObjects.Add(obj);
+                            Objects.Add(obj);
                     break;
                 case ExtensionCategories.Channel:
                     foreach (var method in type.GetMethods())
