@@ -34,6 +34,7 @@ namespace PanelController.Controller
             /// /M -> Message
             /// /L -> Level
             /// /F -> From
+            /// /T -> LoggedAt
             /// </summary>
             /// <param name="format">Format</param>
             /// <param name="_"></param>
@@ -42,7 +43,7 @@ namespace PanelController.Controller
             {
                 if (format is not string fmt)
                     return "";
-                return format.Replace("/M", Message).Replace("/L", $"{Level}").Replace("/F", From);
+                return format.Replace("/M", Message).Replace("/L", $"{Level}").Replace("/F", From).Replace("/T", LoggedAt.ToString());
             }
         }
 
