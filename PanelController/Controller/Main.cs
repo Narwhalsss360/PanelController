@@ -80,9 +80,9 @@ namespace PanelController.Controller
 
                 Guid guid = new Guid(data.Take(16).ToArray());
                 PanelInfo info = new();
-                info.InterfaceCount[InterfaceTypes.Digital] = BitConverter.ToUInt32(data, 16);
-                info.InterfaceCount[InterfaceTypes.Analog] = BitConverter.ToUInt32(data, 20);
-                info.InterfaceCount[InterfaceTypes.Display] = BitConverter.ToUInt32(data, 24);
+                info.DigitalCount = BitConverter.ToUInt32(data, 16);
+                info.AnalogCount = BitConverter.ToUInt32(data, 20);
+                info.DisplayCount = BitConverter.ToUInt32(data, 24);
                 info.PanelGuid = guid;
 
                 ConnectedPanels.Add(new(guid, channel));

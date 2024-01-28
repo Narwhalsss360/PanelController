@@ -4,6 +4,12 @@ namespace PanelController.PanelObjects
 {
     public interface IPanelObject : IFormattable
     {
+        public class NoneObject : IPanelObject
+        {
+        }
+
+        public static readonly IPanelObject None = new NoneObject();
+
         public string Status { get => "OK"; }
 
         public string? ToString()

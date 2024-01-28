@@ -21,6 +21,22 @@ namespace PanelController.Profiling
             }
         }
 
+        public Profile()
+        {
+        }
+
+        public Profile(SerializableProfile serializable)
+        {
+            Name = serializable.Name;
+            LoadMappingsFrom(serializable);
+        }
+
+        public void LoadMappingsFrom(SerializableProfile serializable)
+        {
+            foreach (var mapping in serializable.Mappings)
+                AddMapping(new(mapping));
+        }
+
         public void AddMapping(Mapping mapping)
         {
             if (!MappingsByGuid.ContainsKey(mapping.PanelGuid))
@@ -43,5 +59,27 @@ namespace PanelController.Profiling
         }
 
         public override string ToString() => Name;
+
+        [Serializable]
+        public class SerializableProfile
+        {
+            public string Name;
+
+            public Mapping.SerializableMapping[] Mappings;
+
+            public SerializableProfile()
+            {
+                Name = string.Empty;
+                Mappings = Array.Empty<Mapping.SerializableMapping>();
+            }
+
+            public SerializableProfile(Profile profile)
+            {
+                Name = profile.Name;
+                Mappings = new Mapping.SerializableMapping[profile.Mappings.Length];
+                for (int i = 0; i < Mappings.Length; i++)
+                    Mappings[i] = new(profile.Mappings[i]);
+            }
+        }
     }
 }
