@@ -58,7 +58,7 @@ namespace PanelController.Controller
 
         public static event EventHandler? Deinitialized;
 
-        private static CancellationTokenSource s_deinitializects = new();
+        private static readonly CancellationTokenSource s_deinitializects = new();
 
         public static CancellationToken DeinitializedCancellationToken { get => s_deinitializects.Token; }
 
@@ -72,7 +72,7 @@ namespace PanelController.Controller
             s_RefreshThread = new Thread(RefreshConnectedPanelsThread);
             s_RefreshThread.Start();
             Process.GetCurrentProcess().Exited += ProcessExited;
-            Logger.Log($"Initialized, PID: {Process.GetCurrentProcess().Id}", Logger.Levels.Info, "Main");
+            Logger.Log($"Initialized, PID: {Environment.ProcessId}", Logger.Levels.Info, "Main");
             PanelsInfo.CollectionChanged += EnsureUniqeGuids;
         }
 
@@ -97,29 +97,22 @@ namespace PanelController.Controller
             }
         }
 
-        public static PanelInfo? FindPanelInfo(this Guid guid)
+        public static string PanelInfoNameOrGuid(this Guid guid)
         {
-            for (int i = 0; i < PanelsInfo.Count; i++)
-                if (PanelsInfo[i].PanelGuid == guid)
-                    return PanelsInfo[i];
-            return null;
-        }
-
-        public static PanelInfo? FindPanelInfo(this string panelName)
-        {
-            for (int i = 0; i < PanelsInfo.Count; i++)
-                if (PanelsInfo[i].Name == panelName)
-                    return PanelsInfo[i];
-            return null;
-        }
-
-        public static string PanelInfoOrGuid(this Guid guid)
-        {
-            if (guid.FindPanelInfo() is PanelInfo panelInfo)
+            if (PanelsInfo.Find(info => info.PanelGuid == guid) is PanelInfo panelInfo)
                 return panelInfo.Name;
             return guid.ToString();
         }
 
+        public static T? Find<T>(this ObservableCollection<T> collection, Predicate<T> predicate) where T : class
+        {
+            for (int i = 0; i < collection.Count; i++)
+            {
+                if (predicate(collection[i]))
+                    return collection[i];
+            }
+            return null;
+        }
 
         public static void Handshake(IChannel channel)
         {
@@ -148,20 +141,34 @@ namespace PanelController.Controller
                 channel.BytesReceived -= receiver;
                 cts.Cancel();
 
-                Guid guid = new Guid(data.Take(16).ToArray());
-                PanelInfo info = new();
-                info.DigitalCount = BitConverter.ToUInt32(data, 16);
-                info.AnalogCount = BitConverter.ToUInt32(data, 20);
-                info.DisplayCount = BitConverter.ToUInt32(data, 24);
-                info.PanelGuid = guid;
+                uint digitalCount = BitConverter.ToUInt32(data, 16);
+                uint analogCount = BitConverter.ToUInt32(data, 20);
+                uint displayCount = BitConverter.ToUInt32(data, 24);
+
+                Guid guid = new(data.Take(16).ToArray());
+                if (PanelsInfo.Find(info => info.PanelGuid == guid) is PanelInfo info)
+                {
+                    info.DigitalCount = digitalCount;
+                    info.AnalogCount = analogCount;
+                    info.DisplayCount = displayCount;
+                }
+                else
+                {
+                    PanelsInfo.Add(new()
+                    {
+                        PanelGuid = guid,
+                        DigitalCount = digitalCount,
+                        AnalogCount = analogCount,
+                        DisplayCount = displayCount
+                    });
+                }
 
                 ConnectedPanels.Add(new(guid, channel));
-                PanelsInfo.Add(info);
                 Logger.Log($"Connected panel ({guid}) through {channel.GetItemName()}", Logger.Levels.Info, "Channel Handshaker");
             }
 
             channel.BytesReceived += receiver;
-            channel.Send(new Message(0, new byte[] { }).GetPackets(1).GetPacketsBytes()[0]);
+            channel.Send(new Message(0, Array.Empty<byte>()).GetPackets(1).GetPacketsBytes()[0]);
 
             Task delay = Task.Delay(1000);
             var token = cts.Token;

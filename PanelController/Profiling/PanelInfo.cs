@@ -1,9 +1,10 @@
 ﻿using PanelController.Controller;
+using System.Runtime.InteropServices;
 
 namespace PanelController.Profiling
 {
     [Serializable]
-    public class PanelInfo : IFormattable
+    public class PanelInfo : IFormattable, IEquatable<PanelInfo>
     {
         public Guid PanelGuid;
 
@@ -20,6 +21,17 @@ namespace PanelController.Profiling
             get => Main.ConnectedPanels.Any(connected => connected.PanelGuid == PanelGuid);
         }
 
+        public bool Equals(PanelInfo? other)
+        {
+            if (other is null)
+                return false;
+            return PanelGuid == other.PanelGuid;
+        }
+
         public string ToString(string? format = null, IFormatProvider? formatProvider = null) => $"{Name}";
+
+        public override bool Equals(object? obj) => Equals(obj as PanelInfo);
+
+        public override int GetHashCode() => PanelGuid.GetHashCode();
     }
 }

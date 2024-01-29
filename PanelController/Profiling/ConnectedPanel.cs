@@ -38,7 +38,7 @@ namespace PanelController.Profiling
 
         public event EventHandler<InterfaceUpdatedEventArgs>? InterfaceUpdated;
 
-        private PacketCollector _collector = new();
+        private readonly PacketCollector _collector = new();
 
         public ConnectedPanel(Guid panelGuid, IChannel channel)
         {
@@ -65,7 +65,7 @@ namespace PanelController.Profiling
 
         private void PacketsCollected(object sender, PacketsReadyEventArgs args)
         {
-            Message message = new Message(args.Packets);
+            Message message = new(args.Packets);
             switch ((ReceiveIDs)message.ID)
             {
                 case ReceiveIDs.DigitalStateUpdate:
