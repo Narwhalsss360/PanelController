@@ -5,6 +5,7 @@ using NStreamCom;
 using static PanelController.Profiling.ConnectedPanel;
 using System.Diagnostics;
 using PanelController.PanelObjects.Properties;
+using System.Collections.Specialized;
 
 namespace PanelController.Controller
 {
@@ -13,6 +14,8 @@ namespace PanelController.Controller
         public static ObservableCollection<ConnectedPanel> ConnectedPanels = new();
 
         public static ObservableCollection<Profile> Profiles = new();
+
+        public static ObservableCollection<PanelInfo> PanelsInfo = new();
 
         private static int s_selectedProfileIndex = -1;
 
@@ -47,8 +50,6 @@ namespace PanelController.Controller
             }
         }
 
-        public static List<PanelInfo> PanelsInfo = new();
-
         private static bool s_isInitialized;
 
         public static bool IsInitialized { get => s_isInitialized; }
@@ -72,9 +73,45 @@ namespace PanelController.Controller
             s_RefreshThread.Start();
             Process.GetCurrentProcess().Exited += ProcessExited;
             Logger.Log($"Initialized, PID: {Process.GetCurrentProcess().Id}", Logger.Levels.Info, "Main");
+            PanelsInfo.CollectionChanged += EnsureUniqeGuids;
         }
 
-        public static PanelInfo? FindPanelInfo(this Guid guid) => PanelsInfo.Find(info => info.PanelGuid == guid);
+        private static void EnsureUniqeGuids(object? sender, NotifyCollectionChangedEventArgs args)
+        {
+            if ((args.Action == NotifyCollectionChangedAction.Replace || args.Action == NotifyCollectionChangedAction.Add) && args.NewItems is not null)
+            {
+                foreach (var newInfoObj in args.NewItems)
+                {
+                    if (newInfoObj is not PanelInfo newInfo)
+                        continue;
+
+                    for (int i = 0; i < PanelsInfo.Count; i++)
+                    {
+                        if (ReferenceEquals(PanelsInfo[i], newInfo))
+                            continue;
+                        if (PanelsInfo[i].PanelGuid != newInfo.PanelGuid)
+                            continue;
+                        PanelsInfo.Remove(PanelsInfo[i]);
+                    }
+                }
+            }
+        }
+
+        public static PanelInfo? FindPanelInfo(this Guid guid)
+        {
+            for (int i = 0; i < PanelsInfo.Count; i++)
+                if (PanelsInfo[i].PanelGuid == guid)
+                    return PanelsInfo[i];
+            return null;
+        }
+
+        public static PanelInfo? FindPanelInfo(this string panelName)
+        {
+            for (int i = 0; i < PanelsInfo.Count; i++)
+                if (PanelsInfo[i].Name == panelName)
+                    return PanelsInfo[i];
+            return null;
+        }
 
         public static string PanelInfoOrGuid(this Guid guid)
         {
@@ -82,6 +119,7 @@ namespace PanelController.Controller
                 return panelInfo.Name;
             return guid.ToString();
         }
+
 
         public static void Handshake(IChannel channel)
         {
@@ -211,6 +249,7 @@ namespace PanelController.Controller
             s_isInitialized = false;
             s_deinitializects.Cancel();
             Process.GetCurrentProcess().Exited -= ProcessExited;
+            PanelsInfo.CollectionChanged -= EnsureUniqeGuids;
             s_RefreshThread?.Join();
             Logger.Log($"Deinitialized", Logger.Levels.Info, "Main");
         }
