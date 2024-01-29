@@ -7,6 +7,8 @@ namespace PanelController.Profiling
 {
     public class Mapping : IEquatable<Mapping>
     {
+        public string Name = string.Empty;
+
         public Guid PanelGuid;
 
         public InterfaceTypes InterfaceType;
