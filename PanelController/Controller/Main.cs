@@ -72,8 +72,9 @@ namespace PanelController.Controller
             s_RefreshThread = new Thread(RefreshConnectedPanelsThread);
             s_RefreshThread.Start();
             Process.GetCurrentProcess().Exited += ProcessExited;
-            Logger.Log($"Initialized, PID: {Environment.ProcessId}", Logger.Levels.Info, "Main");
             PanelsInfo.CollectionChanged += EnsureUniqeGuids;
+            Initialized?.Invoke(null, new());
+            Logger.Log($"Initialized, PID: {Environment.ProcessId}", Logger.Levels.Info, "Main");
         }
 
         private static void EnsureUniqeGuids(object? sender, NotifyCollectionChangedEventArgs args)
@@ -258,6 +259,9 @@ namespace PanelController.Controller
             Process.GetCurrentProcess().Exited -= ProcessExited;
             PanelsInfo.CollectionChanged -= EnsureUniqeGuids;
             s_RefreshThread?.Join();
+            Deinitialized?.Invoke(null, new());
+            foreach (var list in Extensions.ExtensionsByCategory.Values)
+                list.Clear();
             Logger.Log($"Deinitialized", Logger.Levels.Info, "Main");
         }
     }
