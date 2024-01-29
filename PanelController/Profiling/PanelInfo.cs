@@ -1,4 +1,6 @@
-﻿namespace PanelController.Profiling
+﻿using PanelController.Controller;
+
+namespace PanelController.Profiling
 {
     [Serializable]
     public class PanelInfo : IFormattable
@@ -12,6 +14,11 @@
         public uint AnalogCount = 0;
 
         public uint DisplayCount = 0;
+
+        public bool IsConnected
+        {
+            get => Main.ConnectedPanels.Any(connected => connected.PanelGuid == PanelGuid);
+        }
 
         public string ToString(string? format = null, IFormatProvider? formatProvider = null) => $"{Name}";
     }
