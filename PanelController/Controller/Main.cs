@@ -22,7 +22,30 @@ namespace PanelController.Controller
             set { s_selectedProfileIndex = value; }
         }
 
-        public static Profile? CurrentProfile { get => s_selectedProfileIndex < 0 ? null : Profiles[s_selectedProfileIndex]; }
+        public static Profile? CurrentProfile
+        {
+            get => s_selectedProfileIndex < 0 ? null : Profiles[s_selectedProfileIndex];
+            set
+            {
+                if (value is null)
+                {
+                    SelectedProfileIndex = -1;
+                    return;
+                }
+
+                for (int i = 0; i < Profiles.Count; i++)
+                {
+                    if (ReferenceEquals(value, Profiles[i]))
+                    {
+                        SelectedProfileIndex = i;
+                        return;
+                    }
+                }
+
+                Profiles.Add(value);
+                SelectedProfileIndex = Profiles.Count - 1;
+            }
+        }
 
         public static List<PanelInfo> PanelsInfo = new();
 
@@ -49,6 +72,15 @@ namespace PanelController.Controller
             s_RefreshThread.Start();
             Process.GetCurrentProcess().Exited += ProcessExited;
             Logger.Log($"Initialized, PID: {Process.GetCurrentProcess().Id}", Logger.Levels.Info, "Main");
+        }
+
+        public static PanelInfo? FindPanelInfo(this Guid guid) => PanelsInfo.Find(info => info.PanelGuid == guid);
+
+        public static string PanelInfoOrGuid(this Guid guid)
+        {
+            if (guid.FindPanelInfo() is PanelInfo panelInfo)
+                return panelInfo.Name;
+            return guid.ToString();
         }
 
         public static void Handshake(IChannel channel)

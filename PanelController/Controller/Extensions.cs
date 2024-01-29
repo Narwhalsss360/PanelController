@@ -55,6 +55,27 @@ namespace PanelController.Controller
             return null;
         }
 
+        public static Type? FindType(this string fullname, ExtensionCategories? category = null)
+        {
+            Type? type = null;
+            if (category is null)
+            {
+                type = Array.Find(AllExtensions, t => t.FullName == fullname);
+            }
+            else
+            {
+                foreach (Type t in ExtensionsByCategory[category.Value])
+                {
+                    if (t.FullName == fullname)
+                    {
+                        type = t;
+                        break;
+                    }
+                }
+            }
+            return type;
+        }
+
         public static void Load(Type type)
         {
             if (type.GetConstructor(new Type[] { }) is null || type.GetExtensionCategory() is not ExtensionCategories category)
