@@ -20,6 +20,31 @@ namespace PanelController.PanelObjects.Properties
 
         public static PropertyInfo[] GetUserProperties(this IPanelObject @object) => GetUserProperties(@object.GetType());
 
+        public static Dictionary<PropertyInfo, object?> GetAllPropertiesValues(this IPanelObject? @object)
+        {
+            Dictionary<PropertyInfo, object?> propertyValuePairs = new();
+            if (@object is null)
+                return propertyValuePairs;
+
+            foreach (PropertyInfo property in @object.GetType().GetProperties())
+            {
+                if (!property.IsUserProperty())
+                    continue;
+                object? value = null;
+
+                try
+                {
+                    value = property.GetValue(@object, null);
+                }
+                catch (Exception)
+                {
+                    continue;
+                }
+                propertyValuePairs.Add(property, value);
+            }
+            return propertyValuePairs;
+        }
+
         public static string GetItemName(this IPanelObject? @object)
         {
             if (@object is null)
