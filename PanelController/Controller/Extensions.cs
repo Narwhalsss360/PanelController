@@ -81,7 +81,7 @@ namespace PanelController.Controller
 
         public static void Load(Type type)
         {
-            if (type.GetConstructor(new Type[] { }) is null || type.GetExtensionCategory() is not ExtensionCategories category)
+            if (type.GetExtensionCategory() is not ExtensionCategories category)
                 return;
 
             switch (category)
