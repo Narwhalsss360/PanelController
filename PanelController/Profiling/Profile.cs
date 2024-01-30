@@ -53,6 +53,13 @@ namespace PanelController.Profiling
             return MappingsByGuid[guid].Find(mapping => mapping.PanelGuid == guid && mapping.InterfaceType == interfaceType && mapping.InterfaceID == interfaceID);
         }
 
+        public Mapping? FindMapping(Mapping? mapping)
+        {
+            if (mapping is null)
+                return null;
+            return FindMapping(mapping.PanelGuid, mapping.InterfaceType, mapping.InterfaceID, mapping.InterfaceOption);
+        }
+
         public void RemoveMapping(Mapping mapping)
         {
             MappingsByGuid[mapping.PanelGuid].Remove(mapping);

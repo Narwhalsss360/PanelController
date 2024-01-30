@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 namespace PanelController.Profiling
 {
     [Serializable]
-    public class PanelInfo : IFormattable, IEquatable<PanelInfo>
+    public class PanelInfo : IEquatable<PanelInfo>
     {
         public Guid PanelGuid;
 
@@ -28,7 +28,7 @@ namespace PanelController.Profiling
             return PanelGuid == other.PanelGuid;
         }
 
-        public string ToString(string? format = null, IFormatProvider? formatProvider = null) => $"{Name}";
+        public override string? ToString() => Name != "" ? Name : $"{PanelGuid} DigitalCount:{DigitalCount} AnalogCount:{AnalogCount} DisplayCount:{DisplayCount}";
 
         public override bool Equals(object? obj) => Equals(obj as PanelInfo);
 

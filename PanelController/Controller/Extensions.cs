@@ -55,8 +55,11 @@ namespace PanelController.Controller
             return null;
         }
 
-        public static Type? FindType(this string fullname, ExtensionCategories? category = null)
+        public static Type? FindType(this string? fullname, ExtensionCategories? category = null)
         {
+            if (fullname is null)
+                return null;
+
             Type? type = null;
             if (category is null)
             {

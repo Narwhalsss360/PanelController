@@ -48,6 +48,7 @@ namespace PanelController.Profiling
 
         public Mapping(SerializableMapping serializable)
         {
+            Name = serializable.Name;
             PanelGuid = serializable.PanelGuid;
             InterfaceType = serializable.InterfaceType;
             InterfaceID = serializable.InterfaceID;
@@ -97,9 +98,13 @@ namespace PanelController.Profiling
                 InterfaceOption == other.InterfaceOption;
         }
 
+        public override string? ToString() => Name != "" ? Name : $"{PanelGuid.PanelInfoNameOrGuid()} {InterfaceType} {InterfaceID} {InterfaceOption}";
+
         [Serializable]
         public class SerializableMapping
         {
+            public string Name = string.Empty;
+
             public Guid PanelGuid;
 
             public InterfaceTypes InterfaceType;
@@ -139,6 +144,7 @@ namespace PanelController.Profiling
 
             public SerializableMapping(Mapping mapping)
             {
+                Name = mapping.Name;
                 PanelGuid = mapping.PanelGuid;
                 InterfaceType = mapping.InterfaceType;
                 InterfaceID = mapping.InterfaceID;

@@ -4,14 +4,17 @@ namespace PanelController.PanelObjects.Properties
 {
     public static class ItemExtensions
     {
+        public static bool IsUserProperty(this PropertyInfo property)
+        {
+            return property.GetCustomAttribute<UserPropertyAttribute>() is not null;
+        }
+
         public static PropertyInfo[] GetUserProperties(this Type type)
         {
             List<PropertyInfo> properties = new();
             foreach (PropertyInfo property in type.GetProperties())
-            {
-                if (property.GetCustomAttribute<UserPropertyAttribute>() is not null)   
+                if (property.IsUserProperty())   
                     properties.Add(property);
-            }
             return properties.ToArray();
         }
 
