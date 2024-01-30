@@ -6,7 +6,7 @@ namespace PanelController.Profiling
 {
     public class ConnectedPanel
     {
-        enum ReceiveIDs
+        public enum ReceiveIDs
         {
             Handshake,
             DigitalStateUpdate,
