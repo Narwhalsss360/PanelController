@@ -1,7 +1,10 @@
 ﻿using PanelController.Controller;
 using PanelController.PanelObjects;
+using PanelController.PanelObjects.Properties;
 using System.Collections.ObjectModel;
 using System.Net.Http.Headers;
+using System.Reflection;
+using static PanelController.Profiling.Mapping.SerializableMapping.MappedObjectSerializable;
 
 namespace PanelController.Profiling
 {
@@ -64,7 +67,23 @@ namespace PanelController.Profiling
             {
                 if (Array.Find(Extensions.AllExtensions, extension => extension.FullName == obj.FullName) is not Type type)
                     continue;
-                Objects.Add(new(type.CreatePanelObject(), obj.Delay, obj.Value));
+                IPanelObject panelObject = type.CreatePanelObject();
+
+                foreach (var objectProperty in obj.Properties)
+                {
+                    if (type.GetProperty(objectProperty.Name) is not PropertyInfo property)
+                        continue;
+                    try
+                    {
+                        property.SetValue(panelObject, objectProperty.Value);
+                    }
+                    catch (Exception)
+                    {
+                        continue;
+                    }
+                }
+
+                Objects.Add(new(panelObject, obj.Delay, obj.Value));
             }
         }
 
@@ -122,16 +141,52 @@ namespace PanelController.Profiling
 
                 public object? Value;
 
+                public ObjectProperty[] Properties;
+
+                public class ObjectProperty
+                {
+                    public string Name;
+
+                    public object? Value;
+
+                    public ObjectProperty()
+                    {
+                        Name = string.Empty;
+                        Value = null;
+                    }
+
+                    public ObjectProperty(string name, object? value)
+                    {
+                        Name = name;
+                        Value = value;
+                    }
+
+                    public static ObjectProperty[] GetObjectProperties(object? @object)
+                    {
+                        if (@object is null)
+                            return Array.Empty<ObjectProperty>();
+
+                        List<ObjectProperty> properties = new();
+
+                        foreach (var property in @object.GetType().GetUserProperties())
+                            properties.Add(new(property.Name, property.GetValue(@object)));
+
+                        return properties.ToArray();
+                    }
+                }
+
                 public MappedObjectSerializable()
                 {
                     FullName = string.Empty;
+                    Properties = Array.Empty<ObjectProperty>();
                 }
 
-                public MappedObjectSerializable(string fullName, TimeSpan delay, object? value)
+                public MappedObjectSerializable(string fullName, TimeSpan delay, object? value, ObjectProperty[] properties)
                 {
                     FullName = fullName;
                     Delay = delay;
                     Value = value;
+                    Properties = properties;
                 }
             }
 
@@ -151,8 +206,12 @@ namespace PanelController.Profiling
                 if (mapping.InterfaceOption is bool option)
                     OnActivated = option;
                 Objects = new MappedObjectSerializable[mapping.Objects.Count];
+
                 for (int i = 0; i < Objects.Length; i++)
-                    Objects[i] = new MappedObjectSerializable(mapping.Objects[i].Object.GetType().FullName ?? "", mapping.Objects[i].Delay, mapping.Objects[i].Value);
+                    Objects[i] = new MappedObjectSerializable(mapping.Objects[i].Object.GetType().FullName ?? "",
+                        mapping.Objects[i].Delay,
+                        mapping.Objects[i].Value,
+                        ObjectProperty.GetObjectProperties(mapping.Objects[i].Object));
             }
         }
     }
