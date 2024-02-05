@@ -50,7 +50,19 @@ namespace PanelController.Profiling
         {
             if (!MappingsByGuid.ContainsKey(guid))
                 return null;
-            return MappingsByGuid[guid].Find(mapping => mapping.PanelGuid == guid && mapping.InterfaceType == interfaceType && mapping.InterfaceID == interfaceID);
+            Predicate<Mapping> finder = (Mapping mapping) =>
+            {
+                if (mapping.InterfaceType != interfaceType)
+                    return false;
+                if (mapping.InterfaceID != interfaceID)
+                    return false;
+                if (interfaceOption is bool findOption && mapping.InterfaceOption is bool mappingOption)
+                    if (findOption != mappingOption)
+                        return false;
+                return true;
+            };
+
+            return MappingsByGuid[guid].Find(finder);
         }
 
         public Mapping? FindMapping(Mapping? mapping)

@@ -200,7 +200,13 @@ namespace PanelController.Controller
                     handshakers.Add(HandshakeAsync(detectedChannel));
             }
             Task whenAll = Task.WhenAll(handshakers);
-            whenAll.Wait(DeinitializedCancellationToken);
+            try
+            {
+                whenAll.Wait(DeinitializedCancellationToken);
+            }
+            catch (OperationCanceledException)
+            {
+            }
             Thread.Sleep(1000);
         }
 
@@ -242,7 +248,10 @@ namespace PanelController.Controller
             Logger.Log($"Received Giud:{args.PanelGuid} Type:{args.InterfaceType} ID:{args.InterfaceID} state:{args.State}", Logger.Levels.Debug, "Main");
             if (CurrentProfile is null)
                 return;
-            CurrentProfile.FindMapping(args.PanelGuid, args.InterfaceType, args.InterfaceID, args.State)?.Execute(args.State);
+
+            object? interfaceOption = args.InterfaceType == InterfaceTypes.Digital ? args.State : null;
+            object? value = args.InterfaceType == InterfaceTypes.Analog ? args.State : null;
+            CurrentProfile.FindMapping(args.PanelGuid, args.InterfaceType, args.InterfaceID, interfaceOption)?.Execute(value);
         }
 
         private static void ProcessExited(object? sender, EventArgs args)
