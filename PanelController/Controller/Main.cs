@@ -164,7 +164,10 @@ namespace PanelController.Controller
                     });
                 }
 
-                ConnectedPanels.Add(new(guid, channel));
+                ConnectedPanel connectedPanel = new(guid, channel);
+                connectedPanel.InterfaceUpdated += InterfaceUpdated;
+                ConnectedPanels.Add(connectedPanel);
+
                 Logger.Log($"Connected panel ({guid}) through {channel.GetItemName()}", Logger.Levels.Info, "Channel Handshaker");
             }
 
@@ -243,7 +246,7 @@ namespace PanelController.Controller
 
         public static async Task SendSourcesDataAsync() => await Task.Run(SendSourcesData, DeinitializedCancellationToken);
 
-        public static void InterfaceUpdated(object sender, InterfaceUpdatedEventArgs args)
+        public static void InterfaceUpdated(object? sender, InterfaceUpdatedEventArgs args)
         {
             Logger.Log($"Received Giud:{args.PanelGuid} Type:{args.InterfaceType} ID:{args.InterfaceID} state:{args.State}", Logger.Levels.Debug, "Main");
             if (CurrentProfile is null)

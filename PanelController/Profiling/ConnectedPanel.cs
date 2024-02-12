@@ -73,7 +73,7 @@ namespace PanelController.Profiling
                         return;
                     uint interfaceID = BitConverter.ToUInt32(message.Data, 0);
                     bool activate = BitConverter.ToBoolean(message.Data, 4);
-                    Main.InterfaceUpdated(this, new InterfaceUpdatedEventArgs(PanelGuid, InterfaceTypes.Digital, interfaceID, activate));
+                    InterfaceUpdated?.Invoke(this, new InterfaceUpdatedEventArgs(PanelGuid, InterfaceTypes.Digital, interfaceID, activate));
                     break;
                 case ReceiveIDs.AnalogStateUpdate:
                     break;
