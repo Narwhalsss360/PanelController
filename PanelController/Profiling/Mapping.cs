@@ -96,7 +96,7 @@ namespace PanelController.Profiling
                 if (InterfaceType == InterfaceTypes.Digital && item.Object is IPanelAction action)
                     results.Add(action, action.Run());
                 else if (InterfaceType == InterfaceTypes.Analog && item.Object is IPanelSettable settable)
-                    results.Add(settable, settable.Set(value is null ? item.Object : value));
+                    results.Add(settable, settable.Set(value as IPanelSettable.SettableValue));
                 else if (item.Object is IPanelSource source)
                     results.Add(source, source.Get());
                 else

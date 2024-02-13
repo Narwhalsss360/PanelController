@@ -66,16 +66,22 @@ namespace PanelController.Profiling
         private void PacketsCollected(object sender, PacketsReadyEventArgs args)
         {
             Message message = new(args.Packets);
+            if (message.Data.Length < 4)
+                return;
+
+            uint interfaceID = BitConverter.ToUInt32(message.Data, 0);
             switch ((ReceiveIDs)message.ID)
             {
                 case ReceiveIDs.DigitalStateUpdate:
                     if (message.Data.Length != 5)
                         return;
-                    uint interfaceID = BitConverter.ToUInt32(message.Data, 0);
                     bool activate = BitConverter.ToBoolean(message.Data, 4);
                     InterfaceUpdated?.Invoke(this, new InterfaceUpdatedEventArgs(PanelGuid, InterfaceTypes.Digital, interfaceID, activate));
                     break;
                 case ReceiveIDs.AnalogStateUpdate:
+                    if (!IPanelSettable.SettableValue.IsValidData(message.Data))
+                        return;
+                    InterfaceUpdated?.Invoke(this, new InterfaceUpdatedEventArgs(PanelGuid, InterfaceTypes.Digital, interfaceID, new IPanelSettable.SettableValue(message.Data.Skip(4).ToArray())));
                     break;
                 default:
                     break;
