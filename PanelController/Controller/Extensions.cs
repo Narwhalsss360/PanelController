@@ -84,6 +84,12 @@ namespace PanelController.Controller
             if (type.GetExtensionCategory() is not ExtensionCategories category)
                 return;
 
+            if (ExtensionsByCategory[category].Contains(type))
+            {
+                Logger.Log($"{type.GetItemName()} Already loaded.", Logger.Levels.Info, "Extension Loader");
+                return;
+            }
+
             switch (category)
             {
                 case ExtensionCategories.Generic:
