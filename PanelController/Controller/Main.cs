@@ -92,6 +92,7 @@ namespace PanelController.Controller
                             continue;
                         if (PanelsInfo[i].PanelGuid != newInfo.PanelGuid)
                             continue;
+                        Logger.Log($"Panel {PanelsInfo[i]} is being replaced by {newInfo}", Logger.Levels.Warning, "Ensure Unique GUIDS");
                         PanelsInfo.Remove(PanelsInfo[i]);
                     }
                 }

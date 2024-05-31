@@ -59,8 +59,8 @@ namespace PanelController.Profiling
             {
                 _collector.Collect(bytes);
             }
-            catch (PacketsLost) { }
-            catch (SizeMismatch) { }
+            catch (PacketsLostException) { }
+            catch (SizeMismatchException) { }
         }
 
         private void PacketsCollected(object sender, PacketsReadyEventArgs args)
