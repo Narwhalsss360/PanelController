@@ -117,7 +117,7 @@ namespace PanelController.Profiling
                 InterfaceOption == other.InterfaceOption;
         }
 
-        public override string? ToString() => Name != "" ? Name : $"{PanelGuid.PanelInfoNameOrGuid()} {InterfaceType} {InterfaceID} {InterfaceOption}";
+        public override string? ToString() => $"{Name}: {PanelGuid.PanelInfoNameOrGuid()} {InterfaceType} {InterfaceID} {InterfaceOption}";
 
         [Serializable]
         public class SerializableMapping
