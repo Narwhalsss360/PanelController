@@ -4,7 +4,7 @@ namespace PanelController.PanelObjects
 {
     public interface IPanelObject : IFormattable
     {
-        public class NoneObject : IPanelObject
+        private class NoneObject : IPanelObject
         {
         }
 
