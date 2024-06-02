@@ -41,6 +41,8 @@ namespace PanelController.Profiling
                 Delay = delay;
                 Value = value;
             }
+
+            public override string? ToString() => $"{Object}";
         }
 
         public ObservableCollection<MappedObject> Objects = new();
