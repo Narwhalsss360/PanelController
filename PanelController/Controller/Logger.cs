@@ -1,4 +1,6 @@
 ﻿using PanelController.PanelObjects.Properties;
+using System.Diagnostics;
+using System.Reflection;
 
 namespace PanelController.Controller
 {
@@ -55,6 +57,12 @@ namespace PanelController.Controller
 
         public static void Log(string message, Levels level, object? sender = null)
         {
+            if (sender is null)
+            {
+                StackFrame[] frames = new StackTrace().GetFrames();
+                if (frames.Length > 1 && frames[1].GetMethod() is MethodInfo info)
+                    sender = $"{info.DeclaringType?.Name}.{info.Name}";
+            }
             _historicalLogs.Add(new(message, level, sender.GetItemName(), DateTime.Now));
             Logged?.Invoke(typeof(Logger), _historicalLogs.Last());
         }
