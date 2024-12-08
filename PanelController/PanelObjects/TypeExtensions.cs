@@ -27,5 +27,13 @@ namespace PanelController.PanelObjects
                 throw new InvalidProgramException("Instance was not a IPanelObject");
             return obj;
         }
+
+        public static ConstructorInfo? GetUserConstructor(this Type type)
+        {
+            foreach (ConstructorInfo constructor in type.GetConstructors())
+                if (constructor.IsPublic && constructor.GetCustomAttribute<UserConstructorAttribute>() is not null)
+                    return constructor;
+            return null;
+        }
     }
 }

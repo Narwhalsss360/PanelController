@@ -13,7 +13,7 @@ namespace PanelController.PanelObjects.Properties
         {
             List<PropertyInfo> properties = new();
             foreach (PropertyInfo property in type.GetProperties())
-                if (property.IsUserProperty())   
+                if (property.IsUserProperty())
                     properties.Add(property);
             return properties.ToArray();
         }
