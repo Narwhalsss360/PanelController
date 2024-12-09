@@ -16,9 +16,9 @@ namespace PanelController.Controller
             Source
         }
 
-        public static ObservableCollection<Tuple<bool, MethodInfo, IChannel.Detect>> Detectors = new();
+        public static ObservableCollection<Tuple<bool, MethodInfo, IChannel.Detect>> Detectors { get; set; } = new();
 
-        public static Dictionary<ExtensionCategories, ObservableCollection<Type>> ExtensionsByCategory = new()
+        public static Dictionary<ExtensionCategories, ObservableCollection<Type>> ExtensionsByCategory { get; set; } = new()
         {
             { ExtensionCategories.Generic, new() },
             { ExtensionCategories.Channel, new() },
@@ -38,7 +38,7 @@ namespace PanelController.Controller
             }
         }
 
-        public static ObservableCollection<IPanelObject> Objects = new();
+        public static ObservableCollection<IPanelObject> Objects { get; set; } = new();
 
         public static ExtensionCategories? GetExtensionCategory(this Type type)
         {
