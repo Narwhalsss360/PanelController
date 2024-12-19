@@ -1,12 +1,10 @@
 ﻿using PanelController.PanelObjects;
-using NStreamCom;
-using PanelController.Controller;
 
 namespace PanelController.Profiling
 {
     public class ConnectedPanel
     {
-        public enum ReceiveIDs
+        public enum ReceiveIDs : byte
         {
             Handshake,
             DigitalStateUpdate,
@@ -38,13 +36,10 @@ namespace PanelController.Profiling
 
         public event EventHandler<InterfaceUpdatedEventArgs>? InterfaceUpdated;
 
-        private readonly PacketCollector _collector = new();
-
         public ConnectedPanel(Guid panelGuid, IChannel channel)
         {
             PanelGuid = panelGuid;
             Channel = channel;
-            _collector.PacketsReady += PacketsCollected;
             channel.BytesReceived += BytesReceived;
         }
 
@@ -55,33 +50,34 @@ namespace PanelController.Profiling
 
         private void BytesReceived(object? sender, byte[] bytes)
         {
-            try
-            {
-                _collector.Collect(bytes);
-            }
-            catch (PacketsLostException) { }
-            catch (SizeMismatchException) { }
         }
 
-        private void PacketsCollected(object sender, PacketsReadyEventArgs args)
+        private void DataReady(object? sender, EventArgs args)
         {
-            Message message = new(args.Packets);
-            if (message.Data.Length < 4)
+            byte[] bytes = Array.Empty<byte>();
+            if (bytes.Length == 0)
                 return;
 
-            uint interfaceID = BitConverter.ToUInt32(message.Data, 0);
-            switch ((ReceiveIDs)message.ID)
+            byte id = bytes[0];
+
+            if (id != (byte)ReceiveIDs.AnalogStateUpdate || id != (byte)ReceiveIDs.DigitalStateUpdate)
+                return;
+
+            uint interfaceID = BitConverter.ToUInt32(bytes, 1);
+            switch ((ReceiveIDs)id)
             {
                 case ReceiveIDs.DigitalStateUpdate:
-                    if (message.Data.Length != 5)
+                    if (bytes.Length != 6)
                         return;
-                    bool activate = BitConverter.ToBoolean(message.Data, 4);
+                    bool activate = BitConverter.ToBoolean(bytes, 5);
                     InterfaceUpdated?.Invoke(this, new InterfaceUpdatedEventArgs(PanelGuid, InterfaceTypes.Digital, interfaceID, activate));
                     break;
                 case ReceiveIDs.AnalogStateUpdate:
-                    if (!IPanelSettable.SettableValue.IsValidSettableData(message.Data))
+                    byte[] data = new byte[bytes.Length - 5];
+                    Array.Copy(bytes, 5, data, 0, data.Length);
+                    if (!IPanelSettable.SettableValue.IsValidSettableData(data))
                         return;
-                    InterfaceUpdated?.Invoke(this, new InterfaceUpdatedEventArgs(PanelGuid, InterfaceTypes.Digital, interfaceID, new IPanelSettable.SettableValue(message.Data.Skip(4).ToArray())));
+                    InterfaceUpdated?.Invoke(this, new InterfaceUpdatedEventArgs(PanelGuid, InterfaceTypes.Digital, interfaceID, new IPanelSettable.SettableValue(data)));
                     break;
                 default:
                     break;
