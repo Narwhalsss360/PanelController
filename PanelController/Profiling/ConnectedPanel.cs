@@ -1,4 +1,6 @@
 ﻿using PanelController.PanelObjects;
+using PanelController.Controller;
+using NStreamCom;
 
 namespace PanelController.Profiling
 {
@@ -32,15 +34,23 @@ namespace PanelController.Profiling
 
         public Guid PanelGuid;
 
+        public PanelInfo PanelInfo { get; private set; }
+
         public IChannel Channel;
 
         public event EventHandler<InterfaceUpdatedEventArgs>? InterfaceUpdated;
 
+        private StreamCollector collector = new();
+
         public ConnectedPanel(Guid panelGuid, IChannel channel)
         {
             PanelGuid = panelGuid;
+            if (Main.PanelsInfo.Find(panel => panel.PanelGuid == panelGuid) is not PanelInfo info)
+                throw new KeyNotFoundException("The panel GUID was not found in the Panel Info collection.");
             Channel = channel;
+            PanelInfo = info;
             channel.BytesReceived += BytesReceived;
+            collector.Collector.StateChanged += CollectorStateChanged;
         }
 
         public async Task SendSourceData(uint interfaceID, object? sourceData)
@@ -48,13 +58,28 @@ namespace PanelController.Profiling
             throw new NotImplementedException();
         }
 
-        private void BytesReceived(object? sender, byte[] bytes)
+        private void BytesReceived(object? sender, byte[] bytes) => collector.Write(bytes);
+
+        private void CollectorStateChanged(object? sender, Collector.StateChangedEventArgs e)
         {
+            switch (e.NewState)
+            {
+                case Collector.States.Collected:
+                    DataReady(collector.Collector.Data);
+                    break;
+                case Collector.States.MissingSize:
+                case Collector.States.MissingData:
+                    Logger.Log($"Communication error with panel {PanelInfo.Name}: {e.NewState}", Logger.Levels.Warning, $"ConnectedPanel: {PanelInfo.Name}");
+                    break;
+                case Collector.States.WaitingSize:
+                case Collector.States.WaitingData:
+                default:
+                    break;
+            }
         }
 
-        private void DataReady(object? sender, EventArgs args)
+        private void DataReady(byte[] bytes)
         {
-            byte[] bytes = Array.Empty<byte>();
             if (bytes.Length == 0)
                 return;
 

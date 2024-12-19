@@ -173,7 +173,7 @@ namespace PanelController.Controller
             }
 
             channel.BytesReceived += receiver;
-            channel.Send(new Message(0, Array.Empty<byte>()).GetPackets(1).GetPacketsBytes()[0]);
+            channel.Send(NEncode.EncodeWithSize([0]));
 
             Task delay = Task.Delay(8000);
             var token = cts.Token;

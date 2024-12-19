@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\dependencies\NStreamCom\src\C#\NStreamCom\NStreamCom.csproj" />
+    <ProjectReference Include="..\dependencies\NStreamCom\src\NStreamCom\NStreamCom.csproj" />
   </ItemGroup>
 
 </Project>
