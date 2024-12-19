@@ -83,13 +83,13 @@ namespace PanelController.Profiling
             if (bytes.Length == 0)
                 return;
 
-            byte id = bytes[0];
+            ReceiveIDs id = (ReceiveIDs)bytes[0];
 
-            if (id != (byte)ReceiveIDs.AnalogStateUpdate || id != (byte)ReceiveIDs.DigitalStateUpdate)
+            if (id != ReceiveIDs.AnalogStateUpdate && id != ReceiveIDs.DigitalStateUpdate)
                 return;
-
             uint interfaceID = BitConverter.ToUInt32(bytes, 1);
-            switch ((ReceiveIDs)id)
+
+            switch (id)
             {
                 case ReceiveIDs.DigitalStateUpdate:
                     if (bytes.Length != 6)
