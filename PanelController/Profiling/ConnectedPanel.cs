@@ -79,7 +79,7 @@ namespace PanelController.Profiling
                     InterfaceUpdated?.Invoke(this, new InterfaceUpdatedEventArgs(PanelGuid, InterfaceTypes.Digital, interfaceID, activate));
                     break;
                 case ReceiveIDs.AnalogStateUpdate:
-                    if (!IPanelSettable.SettableValue.IsValidData(message.Data))
+                    if (!IPanelSettable.SettableValue.IsValidSettableData(message.Data))
                         return;
                     InterfaceUpdated?.Invoke(this, new InterfaceUpdatedEventArgs(PanelGuid, InterfaceTypes.Digital, interfaceID, new IPanelSettable.SettableValue(message.Data.Skip(4).ToArray())));
                     break;
